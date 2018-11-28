@@ -313,15 +313,10 @@ class State
 
                     if($drow == $dcol)
                     {
-                        //echo "Diagonal at <br>";
-                        //echo "(" . $xpositions[$i] . ", " . $ypositions[$i] . ")<br>";
-                        //echo "(" . $xpositions[$x] . ", " . $ypositions[$x] . ")<br>";
                         $clashes += 1;
                     }
                 }
             }
-            //echo "(" . $xpositions[$i] . ", " . $ypositions[$i] . ")<br>";
-            //echo "<br>";
         }
         $clashes = $clashes / 2;
 

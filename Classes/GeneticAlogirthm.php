@@ -59,7 +59,7 @@ class GeneticAlogirthm
      */
     public function getChild()
     {
-        return $this->child;
+        return $this->children;
     }
 
     /**
@@ -67,7 +67,7 @@ class GeneticAlogirthm
      */
     public function setChild($child)
     {
-        $this->child = $child;
+        $this->children = $child;
     }
 
     /**
@@ -159,16 +159,8 @@ class GeneticAlogirthm
         // Creating new population from the 2 best fit individuals
         for($i = 0; $i < count($this->population); $i++)
         {
-            // Coin flip
-            if(1/*mt_rand(0, 1)*/)
-            {
-                $this->pmxcrossover($adam->getOneArray(), $eve->getOneArray(), $i);
-            }
-
-            else
-            {
-                $this->mutation($adam->getOneArray(), $eve->getOneArray());
-            }
+            // Coin flip for mutation and crossover
+            $this->pmxcrossover($adam->getOneArray(), $eve->getOneArray(), $i);
 
             //echo "Child $i: " . print_r($this->children[$i]) . "<br>";
         }
@@ -227,12 +219,33 @@ class GeneticAlogirthm
                 //shuffle($this->children[$i]);
             }
         }
+
+        // Attempting to mutate the child
+        $this->mutation($i);
     }
 
-    public function mutation($adam, $eve)
+    public function mutation($i)
     {
+        // Chances of mutating
+        if (mt_rand(1, 100) == 1)
+        {
+            echo "Mutation occured <br>";
+            $position = mt_rand(0, (count($this->children[$i])) - 1);
+            $swap = mt_rand(0, (count($this->children[$i])) - 1);
 
+            // Making sure they are not the same
+            while ($position == $swap)
+            {
+                $position = mt_rand(0, (count($this->children[$i])) - 1);
+            }
+
+            // Swapping mutated Alle
+            $mutatedAllele = $this->children[$i][$position];
+            $this->children[$i][$position] = $this->children[$i][$swap];
+            $this->children[$i][$swap] = $mutatedAllele;
+        }
     }
+
 
     public function calculateProbability($fitnessArray)
     {
@@ -257,13 +270,13 @@ class GeneticAlogirthm
 
     public function newPopulation()
     {
-        $counter = 0;
         // Looping through population
         for($i = 0; $i < count($this->population); $i++)
         {
             // Getting the board
             $board = $this->population[0]->getBoard();
 
+            // Resetting entire board and overwriting the previous state with the new one
             for($x = 0; $x < count($board); $x++)
             {
                 for($y = 0; $y < count($board); $y++)

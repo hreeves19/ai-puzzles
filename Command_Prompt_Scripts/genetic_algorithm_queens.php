@@ -48,7 +48,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
     }
 
     // Population is now initialized enter the while loop
-    while(/*!$foundSol*/$counter != 100)
+    while(/*!$foundSol*/$counter != 1000)
     {
         echo "<h1>Iteration $counter</h1><hr>";
 
@@ -62,6 +62,14 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 
             // Calculate initial fitness
             array_push($fitness, $population[$i]->calculateFitness());
+
+            if($fitness[$i] == $population[$i]->getValue())
+            {
+                echo $population[$i]->getValue() . "<br>";
+                echo "<h1>DONE</h1>";
+                $population[$i]->showBoard();
+                $foundSol = true;
+            }
         }
 
         // Population
@@ -88,7 +96,6 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
         }
 
         $counter++;
-        $foundSol = true;
         unset($fitness);
         $fitness = array();
     }
