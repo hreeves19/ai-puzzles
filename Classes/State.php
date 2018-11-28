@@ -173,6 +173,7 @@ class State
 
     public function randomizeChromosome()
     {
+        $counter = 0;
         // Checking to make sure queens was set
         if(!isset($this->queens) || $this->queens < 1 || $this->queens == null)
         {
@@ -191,8 +192,20 @@ class State
             {
                 array_push($this->board[$i], 0);
             }
-            $random = mt_rand(0, $this->queens - 1);
-            $this->board[$i][mt_rand(0, $this->queens - 1)] = 1;
+
+            //$this->board[$i][mt_rand(0, $this->queens - 1)] = 1;
+        }
+
+        while($counter < $this->queens)
+        {
+            $x = mt_rand(0, $this->queens - 1);
+            $y = mt_rand(0, $this->queens - 1);
+
+            if($this->board[$x][$y] != 1)
+            {
+                $this->board[$x][$y] = 1;
+                $counter++;
+            }
         }
 
         return true;

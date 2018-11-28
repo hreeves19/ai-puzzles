@@ -13,6 +13,8 @@ class GeneticAlogirthm
     private $parentOne;
     private $parentTwo;
     private $children = array();
+    private $parents = array();
+    private $k = 2;
 
     /**
      * GeneticAlogirthm constructor.
@@ -86,148 +88,199 @@ class GeneticAlogirthm
         $this->population = $population;
     }
 
-    public function select()
+    public function selectParents($algorithm)
     {
-        // Set the first parent
-        $max_1 = max($this->probability);
-
-        // If whole population is worse case scenario
-        if($max_1 == 0)
+        switch($algorithm)
         {
-            $randOne = mt_rand(0, count($this->population) - 1);
-            $randTwo = $randOne;
+            case 0:
+                $this->select();
 
-            $this->setParentOne($this->population[$randOne]);
-
-            // Preventing same parent being chosen
-            while($randOne == $randTwo)
-            {
-                $randTwo = mt_rand(0, count($this->population) - 1);
-            }
-
-            $this->setParentTwo($this->population[$randTwo]);
-        }
-
-        else
-        {
-            // Setting first parent by maximum probability
-            $this->setParentOne($this->population[array_search($max_1, $this->probability)]);
-
-            // Search array for other candidates that have the same max value
-            $maxPop = array_keys($this->probability, $max_1);
-
-            if(count($maxPop) >= 2)
-            {
-                $this->setParentTwo($this->population[$maxPop[1]]);
-            }
-
-            else
-            {
-                // Setting both to zero
-                $max = $max_2 = 0;
-
-                // Select parent by second best probability
-                for($i=0; $i<count($this->probability); $i++)
+                while(count($this->children) != count($this->population))
                 {
-                    if($this->probability[$i] > $max)
-                    {
-                        $max_2 = $max;
-                        $max = $this->probability[$i];
-                    }
-                    else if($this->probability[$i] > $max_2)
-                    {
-                        $max_2 = $this->probability[$i];
-                    }
-                    //echo "$max<br>$max_2<br>";
+                    // Reproducing
+                    $this->reproduce();
                 }
+                break;
 
-                // Setting first parent by maximum probability
-                $this->setParentTwo($this->population[array_search($max_2, $this->probability)]);
-            }
-            //var_dump($this->probability);
-            echo "<h3>State " . $this->getParentOne()->getName() . "</h3>" . $this->getParentOne()->showBoard() . "Fitness " . $this->parentOne->getFitness() . "<br>";
-            echo "<h3>State " . $this->getParentTwo()->getName() . "</h3>" . $this->getParentTwo()->showBoard() . "Fitness " . $this->parentTwo->getFitness() . "<br>";
+            case 1:
+                while(count($this->children) != count($this->population))
+                {
+                    // Making individuals fight
+                    array_push($this->parents, $this->ktournament());
+                    array_push($this->parents, $this->ktournament());
+
+                    // Setting parents
+                    $this->setParentOne($this->parents[0]);
+                    $this->setParentTwo($this->parents[1]);
+
+                    // Reproducing
+                    $this->reproduce();
+                    unset($this->parents);
+                    $this->parents = array();
+                }
+                break;
         }
     }
 
-    public function reproduce()
+    public function ktournament()
+    {
+        $arena = array();
+
+        // Select random individuals from pop and make them fight
+        for($i = 0; $i < $this->k; $i++)
+        {
+            // Shoving individuals into the arena
+            array_push($arena, $this->population[mt_rand(0, count($this->population) - 1)]);
+        }
+
+        $winner = $this->population[array_search(max($arena), $arena)];
+        return $winner;
+    }
+
+    public function select()
+    {
+        $temp = $this->probability;
+        asort($temp);
+        $max_1 = max($temp);
+        $max_2 = min($temp);
+
+        for($i=0; $i<count($temp); $i++)
+        {
+            if($temp[$i] > $max_1)
+            {
+                $max_1 = $temp[$i];
+            }
+            else if($temp[$i] > $max_2 && $max_1 != $temp[$i])
+            {
+                $max_2 = $temp[$i];
+            }
+        }
+
+        $this->setParentOne($this->population[array_search($max_1, $this->probability)]);
+        $this->setParentTwo($this->population[array_search($max_2, $this->probability)]);
+
+        echo "<h3>State " . $this->getParentOne()->getName() . "</h3>" . $this->getParentOne()->showBoard() . "Fitness " . $this->parentOne->getFitness() . "<br>";
+        echo "<h3>State " . $this->getParentTwo()->getName() . "</h3>" . $this->getParentTwo()->showBoard() . "Fitness " . $this->parentTwo->getFitness() . "<br>";
+
+    }
+
+    /*public function reproduce()
     {
         // Get adam and eve to create new population
         $adam = $this->getParentOne();
         $eve = $this->getParentTwo();
+        $count = 0;
 
         // Creating new population from the 2 best fit individuals
-        for($i = 0; $i < count($this->population); $i++)
+        for($i = 0; $i < count($this->population) / 2; $i++)
         {
             // Coin flip for mutation and crossover
             $this->pmxcrossover($adam->getOneArray(), $eve->getOneArray(), $i);
 
             //echo "Child $i: " . print_r($this->children[$i]) . "<br>";
         }
+
+        for($i = 0; $i < count($this->population); $i++)
+        {
+            if($i == count($this->population) - 1)
+            {
+                continue;
+            }
+
+            else if($this->children[$i] == $this->children[$i + 1])
+            {
+                $count++;
+            }
+        }
+
+        echo "Population that is the same: $count<br>";
+    }*/
+
+    public function reproduce()
+    {
+        // parents to reproduce
+        $parent1 = $this->getParentOne();
+        $parent2 = $this->getParentTwo();
+        $count = count($this->children) - 1;
+
+        $this->pmxcrossover($parent1->getOneArray(), $parent2->getOneArray(), $count);
     }
 
     public function pmxcrossover($adam, $eve, $i)
     {
-        // Chunk size is queens / 2
-        $queens = $this->parentOne->getQueens();
-        $chunk_size = mt_rand(1, $queens / 2);
+        $method = mt_rand(0, 2);
+        $size = count($adam) - 1;
+        $next = $i + 1;
 
-        // From front of parent
-        if(mt_rand(0, 1))
+        switch($method)
         {
-            // Mom goes first
-            if(mt_rand(0, 1))
+            // One Point Crossover
+            case 0:
             {
-                // Slicing array from beginning
-                $eve = array_slice($eve, 0, $chunk_size);
-                $adam = array_slice($adam, 0, $queens - $chunk_size);
+                $cuttoff = mt_rand(1, $size);
 
-                array_push($this->children, array_merge($eve, $adam));
+                // First child gets adam as first and then eves
+                array_push($this->children, array_merge(array_slice($adam, 0, $cuttoff), array_slice($eve, $cuttoff)));
+                array_push($this->children, array_merge(array_slice($eve, 0, $cuttoff), array_slice($adam, $cuttoff)));
+
+                break;
             }
 
-            else
+            // Multi Point Point Crossover
+            case 1:
             {
-                // Slicing array from beginning
-                $eve = array_slice($eve, 0,$queens - $chunk_size);
-                $adam = array_slice($adam, 0, $chunk_size);
+                $bound1 = mt_rand(1, $size / 2);
+                $bound2 = mt_rand($bound1, $size / 2);
 
-                array_push($this->children, array_merge($adam, $eve));
-            }
-        }
+                // First child gets adam as first and then eves
+                array_push($this->children, array_merge(array_slice($adam, 0, $bound1), array_slice($eve, $bound1 + 1, $bound2), array_slice($adam, $bound2 + 1)));
+                array_push($this->children, array_merge(array_slice($eve, 0, $bound1), array_slice($adam, $bound1 + 1, $bound2), array_slice($eve, $bound2 + 1)));
 
-        // Back of parent
-        else
-        {
-            // Mom goes first
-            if(mt_rand(0, 1))
-            {
-                // Slicing array from beginning
-                $eve = array_slice($eve, -($chunk_size), $chunk_size);
-                $adam = array_slice($adam,-($queens - $chunk_size), $queens - $chunk_size);
-
-                array_push($this->children, array_merge($eve, $adam));
-                //shuffle($this->children[$i]);
+                break;
             }
 
-            else
+            // Uniform Crossover
+            case 2:
             {
-                // Slicing array from beginning
-                $adam = array_slice($adam, -($chunk_size), $chunk_size);
-                $eve = array_slice($eve,-($queens - $chunk_size), $queens - $chunk_size);
+                $geneSequence1 = array();
+                $geneSequence2 = array();
 
-                array_push($this->children, array_merge($adam, $eve));
-                //shuffle($this->children[$i]);
+                for($i = 0; $i < count($adam); $i++)
+                {
+                    // Adam if 1
+                    if(mt_rand(0, 1))
+                    {
+                        array_push($geneSequence1, $adam[$i]);
+                        array_push($geneSequence2, $eve[$i]);
+                    }
+
+                    else
+                    {
+                        array_push($geneSequence2, $adam[$i]);
+                        array_push($geneSequence1, $eve[$i]);
+                    }
+                }
+
+                array_push($this->children, $geneSequence1);
+                array_push($this->children, $geneSequence2);
+                break;
+            }
+
+            // Invalid number
+            default:
+            {
+                break;
             }
         }
 
         // Attempting to mutate the child
-        $this->mutation($i);
+        $this->mutation($i, false, false);
     }
 
-    public function mutation($i)
+    public function mutation($i, $flag, $parent)
     {
         // Chances of mutating
-        if (mt_rand(1, 100) == 1)
+        if (mt_rand(1, 1000) == 1)
         {
             echo "Mutation occured <br>";
             $position = mt_rand(0, (count($this->children[$i])) - 1);
@@ -253,7 +306,7 @@ class GeneticAlogirthm
         $sum = array_sum($fitnessArray);
 
         // Checking to make sure population is set
-        if(!isset($this->population) || $this->population == null || count($this->population) < 1)
+        if(!isset($this->population) || $this->population == null || count($this->population) < 1 || $sum == 0)
         {
             return false;
         }
@@ -290,6 +343,7 @@ class GeneticAlogirthm
             }
 
             $this->population[$i]->setBoard($board);
+
         }
     }
 }

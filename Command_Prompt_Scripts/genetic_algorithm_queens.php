@@ -8,6 +8,16 @@
 require("../Classes/State.php");
 require("../Classes/GeneticAlogirthm.php");
 
+$previousAdam = 0;
+$previousEve = 0;
+$adam = 0;
+$eve = 0;
+$countA = 0;
+$countB = 0;
+$thresh = 5;
+$maxFitness = 0;
+$bestResult = new State();
+
 // Getting command line arguements
 if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 {
@@ -48,7 +58,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
     }
 
     // Population is now initialized enter the while loop
-    while(/*!$foundSol*/$counter != 1000)
+    while($counter != 1000)
     {
         echo "<h1>Iteration $counter</h1><hr>";
 
@@ -72,6 +82,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
             }
         }
 
+
         // Population
         $genetic = new GeneticAlogirthm();
         $genetic->setPopulation($population);
@@ -85,8 +96,61 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 
         else
         {
+            $fittest = max($fitness);
+
+            if($fittest > $maxFitness)
+            {
+                $maxFitness = $fittest;
+                $bestResult = $population[array_search($maxFitness, $fitness)];
+
+                echo "<h3>State " . $bestResult->getName() . "</h3><br>";
+                echo "<h3>Best Fitness: " . $bestResult->getFitness() . " </h3><hr>";
+                echo  $bestResult->showBoard() . "<br>";
+            }
             // Selecting adam and eve
-            $genetic->select();
+            $genetic->selectParents($algorithm);
+            //$genetic->select();
+
+            $current = $genetic->getParentOne()->getFitness();
+            $current2 = $genetic->getParentTwo()->getFitness();
+
+            /****************Prevent Algorithm From Gettting Stuck****************/
+            if($adam != $current)
+            {
+                $adam = $current;
+                $countA = 0;
+            }
+
+            else
+            {
+                $countA++;
+
+                if($countA == $thresh)
+                {
+                    // Mutate Adam
+                }
+            }
+
+            if($eve != $current2)
+            {
+                $eve = $current2;
+                $countB = 0;
+            }
+
+            else
+            {
+                $countB++;
+
+                if($countB == $thresh)
+                {
+                    // Mutate Adam
+                    //$genetic->setParentTwo($population[]);
+
+                    // Mutate Eve
+                    //echo "Mutating Eve<br>";
+                }
+            }
+            /****************Prevent Algorithm From Gettting Stuck****************/
 
             // Reproducing children
             $genetic->reproduce();

@@ -66,13 +66,20 @@
         <div class="form-group">
             <label for="algorithm">Select algorithm to solve puzzle</label>
             <select class="form-control" id="algorithm" name="algorithm">
-                <option value="0">Genetic Algorithm</option>
+                <option value="0">Adam and Eve Selection</option>
+                <option value="1">K-Tournament Selection</option>
             </select>
         </div>
 
         <button type="button" class="btn btn-primary" onclick="execute()">Submit</button>
     </form>
 
+    <div id="load" class="text-center" style="display: none;">
+        <figure class="">
+            <img src="loading2.gif" class="rounded mx-auto d-block">
+            <figcaption><h2>Loading...</h2></figcaption>
+        </figure>
+    </div>
     <div id="response">
 
     </div>
@@ -89,6 +96,7 @@
         var numberQueens = document.getElementById("numQueens").value;
         var popSize = document.getElementById("popSize").value;
         var algorithm = document.getElementById("algorithm").value;
+        document.getElementById("load").style.display = "block";
 
         //ajax call
         $.ajax({
@@ -96,6 +104,7 @@
             method: "post",
             data: {numQueens: numberQueens, popSize: popSize, algorithm: algorithm},
             success: function(data){
+                document.getElementById("load").style.display = "none";
                 document.getElementById("response").innerHTML = data;
             }
         });
