@@ -18,14 +18,18 @@ $thresh = 5;
 $maxFitness = 0;
 $bestResult = new State();
 
+// Start timer
+$time_start = microtime(true);
+
 // Getting command line arguements
-if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
+if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
 {
     // Getting command line arguments
     $filepath = $argv[0];
     $queens = $argv[1];
     $popSize = $argv[2];
     $algorithm = $argv[3];
+    $iterations = $argv[4];
     $foundSol = false;
     $fitness = array();
     $counter = 0;
@@ -58,7 +62,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
     }
 
     // Population is now initialized enter the while loop
-    while($counter != 1000)
+    while($counter != $iterations)
     {
         echo "<h1>Iteration $counter</h1><hr>";
 
@@ -105,7 +109,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
 
                 echo "<h3>State " . $bestResult->getName() . "</h3><br>";
                 echo "<h3>Best Fitness: " . $bestResult->getFitness() . " </h3><hr>";
-                echo  $bestResult->showBoard() . "<br>";
+                echo  $bestResult->showBoard() . "<hr>";
             }
             // Selecting adam and eve
             $genetic->selectParents($algorithm);
@@ -163,6 +167,8 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]))
         unset($fitness);
         $fitness = array();
     }
+
+    echo "<h1>Execution Time: " . (microtime(true) - $time_start) . " ms</h1>";
 }
 
 else

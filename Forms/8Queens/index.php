@@ -57,15 +57,20 @@
     <form id="puzzle">
         <div class="form-group">
             <label for="numQueens">Number of Queens</label>
-            <input type="text" class="form-control" id="numQueens" aria-describedby="Number of Queens" placeholder="Enter Number of Queens" name="numQueens">
+            <input type="text" class="form-control" id="numQueens" aria-describedby="Number of Queens" placeholder="Enter Number of Queens" name="numQueens" required>
         </div>
         <div class="form-group">
             <label for="popSize">Population Size</label>
-            <input type="text" class="form-control" id="popSize" aria-describedby="Size of the population" placeholder="Enter Population Size" name="popSize">
+            <input type="text" class="form-control" id="popSize" aria-describedby="Size of the population" placeholder="Enter Population Size" name="popSize" required>
+        </div>
+        <div class="form-group">
+            <label for="iteration">Number of Iterations</label>
+            <input type="text" class="form-control" id="iteration" aria-describedby="Number of Iteration" placeholder="Enter Number of Iterations" name="iteration" required>
+
         </div>
         <div class="form-group">
             <label for="algorithm">Select algorithm to solve puzzle</label>
-            <select class="form-control" id="algorithm" name="algorithm">
+            <select class="form-control" id="algorithm" name="algorithm" required>
                 <option value="0">Adam and Eve Selection</option>
                 <option value="1">K-Tournament Selection</option>
             </select>
@@ -96,13 +101,14 @@
         var numberQueens = document.getElementById("numQueens").value;
         var popSize = document.getElementById("popSize").value;
         var algorithm = document.getElementById("algorithm").value;
+        var iteration = document.getElementById("iteration").value;
         document.getElementById("load").style.display = "block";
 
         //ajax call
         $.ajax({
             url: "../../Server_Scripts/ExecutePuzzle.php",
             method: "post",
-            data: {numQueens: numberQueens, popSize: popSize, algorithm: algorithm},
+            data: {numQueens: numberQueens, popSize: popSize, algorithm: algorithm, iteration: iteration},
             success: function(data){
                 document.getElementById("load").style.display = "none";
                 document.getElementById("response").innerHTML = data;
