@@ -94,11 +94,14 @@
     </div>
     <br>
     <div class="row">
-        <div class="col">
-            <canvas id="mutations"></canvas>
-        </div>
         <div class="col" style="width: 100%; height: 100%;">
             <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col" style="width: 100%; height: 100%;">
+            <canvas id="mutations"></canvas>
         </div>
     </div>
 <!--    <h1>Log</h1>
@@ -179,6 +182,11 @@
                                 scaleLabel: {
                                     display: true,
                                     labelString: "Number of Solutions"
+                                },
+
+                                ticks: {
+                                    autoSkip: true,
+                                    stepSize: 1
                                 }
                             }],
                             xAxes: [{
@@ -205,11 +213,15 @@
         }); // AJAX CALL
 
         $.ajax({
-            url: "../../Server_Scripts/GetLog.php", method: "post",
+            url: "../../Server_Scripts/GetMutations.php", method: "post",
             success: function(data)
             {
                 var jsonfile = JSON.parse(data);
                 var keys = Object.keys(jsonfile);
+                console.log(jsonfile);
+
+                var firstItem = jsonfile[0];
+                var lastItem = jsonfile[jsonfile.length-1];
 
                 // Line Chart Example
                 var ctx = document.getElementById("canvas");
@@ -221,13 +233,16 @@
                             yAxes: [{
                                 scaleLabel: {
                                     display: true,
-                                    labelString: "Number of Solutions"
+                                    labelString: "Number of Mutations"
                                 }
                             }],
                             xAxes: [{
                                 scaleLabel: {
                                     display: true,
                                     labelString: "Number of iterations"
+                                },
+                                ticks: {
+                                    autoSkip: true,
                                 }
                             }]
                         }
@@ -235,11 +250,11 @@
                     data: {
                         labels: Object.keys(jsonfile),
                         datasets: [{
-                            label: "Solutions Found",
+                            label: "Mutations per Generation",
                             data: Object.values(jsonfile),
                             // #8DC641 #21357
-                            borderColor: '#4286f4',
-                            backgroundColor: '#4286f4',
+                            borderColor: '#ff1e20',
+                            backgroundColor: '#ff1e20',
                             fill: false,
                         }],
                     },

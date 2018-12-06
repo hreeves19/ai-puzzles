@@ -219,10 +219,11 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
             $solver->selectParents($algorithm,  $fitness);
             //$solver->logKids();
             $solver->newPopulation();
-            $numberMutations = $solver->getMutations();
-            array_push($avgMutations, $numberMutations);
-            $numberMutations = 0;
         }
+
+        $numberMutations = $solver->getMutations();
+        array_push($avgMutations, $numberMutations);
+        $numberMutations = 0;
 
         unset($fitness);
         $counter++;
@@ -254,7 +255,21 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
 
     fwrite($log, "Finished system run at " . date("F d, Y h:i:s A", time()) . "\n");
     fclose($log);
-    
+
+    // Average Mutations per generations
+    $file = fopen("C:\\xampp\htdocs\ai-puzzles\Log\\mutation.txt", "w");
+    $chunks = array_chunk($avgMutations, intval($iterations / 10));
+    $temp = array();
+
+    // Getting nice data for graph
+    foreach ($chunks as $key => $value)
+    {
+        $temp[$key] = $value[0];
+    }
+
+    fwrite($file, serialize($temp));
+    fclose($file);
+
     echo "<h1>Execution Time: " . (microtime(true) - $time_start) . " ms</h1>";
 }
 
