@@ -17,13 +17,41 @@ class State
     private $probability;
     private $fitness;
 
-    /**
-     * State constructor.
-     */
     public function __construct()
     {
 
     }
+
+    public function initialize($numQueens)
+    {
+        // Creating random sequence
+        $this->setQueens($numQueens);
+
+        $genes = array();
+
+        for($i = 0; $i < $numQueens; $i++)
+        {
+            $genes[$i] = mt_rand(0, $numQueens - 1);
+        }
+
+        $this->overwriteOneArray($genes);
+    }
+
+    public function genesToBoard()
+    {
+        // Getting genes and resetting board
+        $genes = $this->oneArray;
+        $board = array_fill(0, $this->queens, array_fill(0, $this->queens, 0));
+        $count = 0;
+        foreach ($board as $keys => $rows)
+        {
+            $board[$genes[$count]][$keys] = 1;
+            $count++;
+        }
+
+        $this->setBoard($board);
+    }
+
 
     /**
      * @return mixed
@@ -32,7 +60,8 @@ class State
     {
         if($this->fitness < 0)
         {
-            var_dump($this->board);
+            echo "Individual has a fitness value lower than 0, which is impossible.<br>";
+            $this->showBoard();
         }
         return $this->fitness;
     }
@@ -109,26 +138,43 @@ class State
         return $this->oneArray;
     }
 
-    /**
-     * @param mixed $oneArray
-     */
     public function setOneArray()
     {
         $this->oneArray = array();
 
         // Rows
-        for($i = 0; $i < $this->queens; $i++)
+        /*for($i = 0; $i < $this->queens; $i++)
         {
+            // Columns
             // Columns
             for($x = 0; $x < $this->queens; $x++)
             {
                 // checking to see if a queen occupies this space
                 if($this->board[$i][$x] == 1)
                 {
-                    array_push($this->oneArray, $x);
+                    array_push($this->oneArray, "($i, $x)");
+                }
+            }
+        }*/
+        $col = 0;
+
+        for($x = 0; $x < $this->queens; $x++)
+        {
+            for($i = 0; $i < $this->queens; $i++)
+            {
+                if($this->board[$i][$col] == 1)
+                {
+                    array_push($this->oneArray, $i);
+                    $col++;
+                    break;
                 }
             }
         }
+    }
+
+    public function overwriteOneArray($array)
+    {
+        $this->oneArray = $array;
     }
 
     /**
@@ -193,19 +239,7 @@ class State
                 array_push($this->board[$i], 0);
             }
 
-            //$this->board[$i][mt_rand(0, $this->queens - 1)] = 1;
-        }
-
-        while($counter < $this->queens)
-        {
-            $x = mt_rand(0, $this->queens - 1);
-            $y = mt_rand(0, $this->queens - 1);
-
-            if($this->board[$x][$y] != 1)
-            {
-                $this->board[$x][$y] = 1;
-                $counter++;
-            }
+            $this->board[mt_rand(0, $i)][$i] = 1;
         }
 
         return true;
