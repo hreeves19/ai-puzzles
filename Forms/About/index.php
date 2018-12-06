@@ -177,7 +177,7 @@
 <div class="blog-header">
     <div class="container">
         <h1 class="blog-title">N-Queen Puzzle Solver</h1>
-        <p class="lead blog-description">An inside story on how it ended</p>
+        <p class="lead blog-description">Our Report</p>
     </div>
 </div>
 <div class="container" id="blog">
@@ -185,7 +185,7 @@
         <div class="col-sm blog-main">
             <div class="blog-post">
                 <h2 class="blog-post-title">Our AI Project</h2>
-                <p class="blog-post-meta">December 5, 2018 by <a href="../About/">Henry Reeves</a></p>
+                <p class="blog-post-meta">December 5, 2018 by <strong>Henry Reeves and Ruben Ortiz</strong></p>
                 <p>Before we get into on how our algorithm works, I would like to give a special thanks to our AI professor, Minhua Huang, for giving us more time
                  than what was originally required.</p>
                 <p>Today, I would like to discuss how we went about solving the N-Queen Puzzle problem, how to setup our project, and what we could do to
@@ -193,7 +193,7 @@
                 way where no queen can attack the other (N = number of queens). For this problem, there are only a finite amount of solutions depending on the number
                  of queens given. Our scripts purpose, is to find all of these solutions and display basic statistical data.</p>
                 <p>The goal of this project is to solve this puzzle with the <strong>Genetic Algorithm</strong>. However, our ultimate goal is to continue to
-                 optimize our algorithm.</p>
+                 optimize our algorithm and setup a website where a user could interact with this puzzle to test our the Genetic Algorithm on the N-Queens Puzzle problem.</p>
                 <hr>
                 <h3>The Genetic Algorithm</h3>
                 <p>Whenever we were deciding what our project was going to be, we wanted it to be something that we would continue. For this reason, Laila and I spoke to Bryan Gillis (Lab Coordinator at S{Q}L) and Sam Allred (Graduate Research Assistant Lead Developer and Software Architect at S{Q}L) about
