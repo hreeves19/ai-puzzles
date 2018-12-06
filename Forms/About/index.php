@@ -196,45 +196,40 @@
                  optimize our algorithm and setup a website where a user could interact with this puzzle to test our the Genetic Algorithm on the N-Queens Puzzle problem.</p>
                 <hr>
                 <h3>The Genetic Algorithm</h3>
-                <p>Whenever we were deciding what our project was going to be, we wanted it to be something that we would continue. For this reason, Laila and I spoke to Bryan Gillis (Lab Coordinator at S{Q}L) and Sam Allred (Graduate Research Assistant Lead Developer and Software Architect at S{Q}L) about
-                    how we could possibly incorporate our class project into the work we do in the lab. During this discussion, Laila and I described what the project needs to incorporate, which is some
-                    form of image processing and human computer interaction. At first, it seemed like we wouldn't be able to come up with an idea that involved our lab.</p>
-                <p>One of the ideas mentioned was a
-                    creating a virtual reality experience where the user could load a map and hold it in their hands. However, we quickly decided against this because our team had no experience with that side
-                    of computer science, we needed to do something we were familiar with.</p>
-                <p>After the virtual reality idea was tossed aside, a few days passed, we were hoping to eventually come up with something. Then one day, while Laila and I were discussing a bug issue, we
-                    finally thought of an idea that would lead us to our real project. What if we could read the text from our historical maps?</p>
-                <h3>The Original Plan</h3>
-                <p>Reading text from our historical documents sounded like a great idea, but it didn't sound like it was enough to be a full-fledged project. We were debating about coming up with a whole new idea. Why not do something simple? Not too long afterwards, we came up with our real project.
-                    The idea is to read the historical documents, save the text, and then determine what it means.</p>
-                <h3>Cataloging Historical Maps</h3>
-                <p>At the Spatial Query Lab (S{Q}L), the cataloging process is simple and done through our in-house website, Bandocat. In short, Bandocat is a website that our lab uses and it allows us to manage these documents and publish them to the Texas Digital Library (TDL). Before we continue to discuss
-                    our project, I must explain the cataloging of these documents.</p>
-                <p>Cataloging these historical documents is not difficult, but it can be very tedious. There is a webpage on Bandocat that allows our employees to catalog these documents. Basically, the catalogers fill out the metadata on the document they are uploading. The metadata includes
-                    the document title, subtitle, author(s) of the map, points of interest, does it have a coast, is there a north arrow, etc. If you want to see all the metadata that our catalogers fill out by looking at the document, please navigate to the <a href="../Catalog/">cataloging page</a>.
-                    Once they have filled out the required fields, they then upload the document onto our SQL database by clicking the button "Upload".</p>
-                <h3>Why Change the Process?</h3>
-                <p>By looking at the cataloging page, you can feel the gravity of how much work it is to catalog a document. In the traditional way, a cataloger in our lab has opened the document on one monitor and then the cataloging page on the other. Our ultimate goal is to automate this entire process.
-                    At the very least, make it faster and less tedious as possible. We understand that doing the same thing over and over is going to eventually be tedious, but there has got to be a better way to do it.</p>
-                <p>Below are issues that we want to correct:</p>
-                <ul>
-                    <li><strong>Limit the two windows to catalog to one.</strong> This should save time from not having to navigate between each window.</li>
-                    <li><strong>Instead of typing, click a button!</strong> If the cataloger finds the metadata they are looking for, it would be much faster to click a button than having to type it out.</li>
-                    <li><strong>Rework Bandocat's user interface to a simple, but modern web page.</strong> You might be thinking "Can it really make that much of a difference?" Honestly, it can. Think about it, do you like coming home from the day to a clean home or a messy one?</li>
-                </ul>
+                <p>In nature the fittest organisms are commonly the ones that live on and get the chance to reproduce offspring. If this process is followed, every generation after will theoretically develop better features than the last generation to improve their living conditions in their environment.  This process has become known as evolution and is much more complicated and time consuming than you would think</p>
+                <p>Let’s consider two cells that each have a pair of chromosomes.  Chromosomes, as we know, are the carriers of genetic material and traits.  Therefore, when two parent cells come together both of their chromosomes mix which may result in an offspring that contains random characteristics from both cell one and cell two.  Furthermore,  since chromosomes hold genetic traits mixing them creates entirely new genetic sequences and this ensures genetic diversity.  This entire process of fusing chromosomes is actually referred to as crossover.  In some rare cases mutation can also be an effect of the crossover process.</p>
+                <p>A common example of mutation is cancer, however, mutations could have positive results as well.  Mutation is necessary for evolution and is the way it started by mutating single-celled organisms into multi-celled organisms. So through this process new generations are produced with traits similar to both parent cells and then that generation can then find other cells to produce the next generation and so on.</p>
+                <p>Now that we have seen the biology of how this process works, lets see how we implemented this into solving the puzzle!</p>
+                <h3>Our System</h3>
+                <p>Our system is has two main components too it, which are the front end and the back end. Basically, we are following the same system architecture that pretty much all modern websites use.
+                 For our styling of our web pages, we are using a css framework called <a href="https://getbootstrap.com/">Bootstrap</a>. Additionally, the web server we are using is called xampp, which is
+                 just running an Apache Server.</p>
+                <p>Let's discuss the a top-down view of how our system runs. First of all, the Apache server must be running, or nothing will work. On the client-side (the browser), we have the user enter
+                information on how they want our script to run. Once they have filled out the form, they can then press a button to start the script.</p>
+                <p>Once the button is submitted, an <strong>AJAX</strong> call to the server is sent. The server will then direct the call to the address that
+                is specified in the URL of the ajax call. Once there, we run <strong>exec()</strong> with the command to run our php script (we pass the user's
+                input as arguments through argv). In other words, the php script that is trying to solve the puzzle is running as its own separate process on our
+                Apache server. Once the script terminates, it returns to where it was called and the server then sends the response, which then creates the charts
+                 and displays the chest boards. </p>
                 <h3>The Results</h3>
-                <p>All in all, we have changed this project a couple times. In the beginning, we thought we were going to be running this website on a node.js server to run Tesseract.js. Afterwards, we thought we were going to write a console script using
-                    Scene Text Detection <a href="../SceneTextDetection/">(see our script in action here)</a> to crop our images and then give it to tesseract.js or a command prompt version of it. Oh, did I mention we were even going to use natural language processing to decide what the metadata was?</p>
-                <p>After many issues and struggling, we ended up with a much
-                    simpler solution. Have the user crop out the images in a canvas and let them choose what it is (in terms of metadata). Afterwards, upload these images to the server (XAMPP), run tesseract on each one. Create an array and assign the key as the value of what the text is supposed to be.
-                    Last but not least, move the user to the cataloging page and fill out the fields as much as possible!</p>
-                <h3>Our Team</h3>
+                <p>We have primarily been testing for 8 queens, but the system also runs with any number. However, we strict user input to only allow
+                 N (the number of queens) to be than 3 because the puzzle is insolvable for N = 1, 2, or 3.</p>
+                <p>In my personal opinion, more mutation that I have added to the system, produced better results. Also, we added a mechanic to the
+                alogorithm that is, interesting. Basically, the longer the script takes to find the solution, the higher the chance that the current
+                 population will be wiped out and reinitialized. The reason I tailored this is because without it, the population will merge to be the
+                 same. Unfortunately, not even mutation was able to handle it. Although, we have only seen the population merge to be the same with
+                Adam and Eve selector.</p>
+                <h3>Conclusion</h3>
+                <p>At first, this algorithm was very difficult for us to understand and implement. However, we eventually were able to figure everything out! Also,
+                the way our program reads the chromosome sequences is backwards compared to the traditional way. Basically, instead of starting from the bottom of the
+                 board and counting up, start at the very top and count down (starting your counting with 0). Also, it is still from left to right.</p>
+                <p>Anyways, if you have any problems or issues running our program, please don't hesitate to email me at hreeves@islander.tamucc.edu. Please follow
+                the installation guide below to get started!</p>
+                <h3>The Development Team</h3>
                 <h6>Ruben Ortiz</h6>
                 <p>Systems Programming Major at Texas A&M Corpus Christi</p>
                 <h6>Henry (Court) Reeves</h6>
                 <p>Undergraduate Research Assistant Developer at S{Q}L and Systems Programming Major at Texas A&M Corpus Christi</p>
-                <h3>Conclusion</h3>
-                <p>The project itself is not complete. In my opinion, the current state of it is not even an alpha build. In reality, what we created is a framework that will be built upon in the future by our team or programmers at S{Q}L. </p>
             </div><!-- /.blog-post -->
             <!-- How to setup project -->
             <div class="blog-post">
@@ -244,36 +239,49 @@
                 <p><strong>I highly recommend that you use a computer that runs off of the Windows operating system.</strong> We cannot guarantee that any of this will work on another operating system.</p>
                 <ol>
                     <li>
-                        <a href="https://www.apachefriends.org/download.html">XAMPP</a> which is our webserver (Only need to run the Apache server)
+                        <a href="https://www.apachefriends.org/download.html">XAMPP</a> which is our webserver (Only need to run the Apache server).
+                    </li>
+                    <li>
+                        <a href="https://www.youtube.com/watch?v=iW0B9NTId2g">Php for Windows</a>, our project requires that php is stored on the user's computer. It's because we use an <strong>exec()</strong> to start the script. You can actually
+                        see the script running in task manager. If there are any issues or you want to stop it, you can just it through task manager.
                     </li>
                 </ol>
                 <h2>Getting Started</h2>
-                <p>At this point, you are only seeing this page for one of three reasons:</p>
+                <p>At this point, you are only seeing this page for one of two reasons:</p>
                 <ol>
                     <li>You have already installed XAMPP and are running a local Apache server</li>
                     <li>We are hosting this on a website that is accessible via the internet</li>
-                    <li>You went into the project files and just ran this through a browser</li>
                 </ol>
-                <p>Either way, if its the first or third reason, I am here to help you out! By the way, I created a video for my software engineering class a while back that will show you how to install XAMPP and move the project files to the correct location.
+                <p>Either way, if its the first or second reason, I am here to help you out! By the way, I created a video for my software engineering class a while back that will show you how to install XAMPP and move the project files to the correct location.
                     I did this because personally, I follow along must easier through watching a video of some kind. Anyways, lets make sure that everything is working properly so that you can run our project!</p>
                 <h2>Downloading and Running XAMPP</h2>
-                <p>Installing and running XAMPP is simple. First of all, click this link <a href="https://www.apachefriends.org/download.html">here</a> to download the version of XAMPP for you computer (I choose the very first option for Windows operating system).
+                <p>Installing and running XAMPP is simple. First of all, click this link <a href="https://www.apachefriends.org/download.html">here</a> to download the version of XAMPP for your computer (I choose the very first option for Windows operating system).
                     Install the software and then run the XAMPP control panel. Once its running, make sure you click "start" on the Apache server. It looks like this:</p>
                 <img src="xampp.JPG">
                 <p>Once the Apache server is running, move the project files to this directory: C:\xampp\htdocs. Your htdcos folder should look like this:</p>
                 <img src="directory.JPG">
-                <p><strong>Note:</strong> The Apache server must be running before you can open the website. Once it is running click <a href="http://localhost/HCIProject/Forms/About/">here</a> or copy and paste this link in your browser: http://localhost/HCIProject/Forms/About/</p>
+                <p><strong>Note:</strong> The Apache server must be running before you can open the website. Once it is running click <a href="http://localhost/ai-puzzles/Forms/8Queens/">here</a> or copy and paste this link in your browser: http://localhost/ai-puzzles/Forms/About/</p>
+                <h2>Configuring XAMPP</h2>
+                <p>Our script needs to have enough memory allocated to it and be able to run for an infinite about of time due to the complexity of solving
+                this type of puzzle. Please follow these steps below.</p>
+                <ol>
+                    <li>Open up XAMPP control panel once again</li>
+                    <li>Once its opened, click on config for the Apache server (should be in the first row)</li>
+                    <li>Once you click on it, a list should pop up. Click on the file: php.ini and let it open in notepad (or any text editor)</li>
+                    <li>Leave this window open, open this link <a href="../../Log/configuration_of_xampp.html">here</a> as a new tab</li>
+                    <li>Use ctrl+a to select everything on the page of the new tab you opened, then use ctrl+c to copy the text</li>
+                    <li>Now go to the window you opened early, whichever editor you opened it with. Then ctrl+a on this window to highlight all
+                     the text, then ctrl+v to overwrite this text file</li>
+                    <li>Last but not least, save the file in the text editor you are on. Then restart the Apache server on XAMPP and you are good to go!</li>
+                </ol>
+                <p>If you are wondering why you had to go through that, its because now the script will be running with the same configuration as ours! Not
+                    changing your php.ini on XAMPP will cause unexpected behavior on our script. In other words, it will not run properly.</p>
+                <h3>References</h3>
+                <p>While we were trying to understand how this algorithm works, this is the website we found that explains this really well! Addtionally,
+                    some of our ideas and thoughts come from this location. You should check it out if you are interested in this topic. Click <a href="https://kushalvyas.github.io/gen_8Q.html">here</a> to visit their page!</p>
+
             </div>
         </div>
-        <!-- About -->
-<!--        <div class="col-sm-3 offset-sm-1 blog-sidebar">
-            <div class="sidebar-module sidebar-module-inset border rounded">
-                <h4>About S{Q}L</h4>
-                <p>We have many projects in our lab (S{Q}L in the Conrad Blucher Institute), but the largest one is the Ed Rachel Map Scanning project.
-                    The goal of the Ed Rachel project is to scan and catalog historical documents dating back to the 19th century and upload these to a database. Once in the
-                    database, we can then upload these documents to the Texas Digital Library for public use.</p>
-            </div>
-        </div>-->
     </div> <!-- Row -->
 </div>
 <footer class="blog-footer text-center">

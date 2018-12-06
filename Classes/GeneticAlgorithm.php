@@ -14,18 +14,21 @@ class GeneticAlgorithm
     private $parentTwo;
     private $children = array();
     private $parents = array();
-    private $k = 3;
+    private $k;
     private $log;
     private $switch;
     private $mutations = 0;
+    private $mutationRate;
 
     /**
      * GeneticAlgorithm constructor.
      */
-    public function __construct($log, $switch)
+    public function __construct($log, $switch, $k, $mutate)
     {
         $this->log = $log;
         $this->switch = $switch;
+        $this->k = $k;
+        $this->mutationRate = $mutate;
     }
 
     /**
@@ -359,7 +362,7 @@ class GeneticAlgorithm
         if(isset($this->children[$i]) && $this->children[$i] != null && count($this->children) > 0)
         {
             // Chances of mutating
-            if (mt_rand(1, 999999) % 2 == 0)
+            if (mt_rand(1, 10)  <= $this->mutationRate)
             {
                 // Hulking out
                 $geneSequence = $this->children[$i];

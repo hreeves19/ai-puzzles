@@ -21,12 +21,13 @@ $pass = true;
 $restart = false;
 $numberMutations = 0;
 $avgMutations = array();
+$answer = [2, 10, 4, 40, 92, 352, 724, 2680, 14200];
 
 // Start timer
 $time_start = microtime(true);
 
 // Getting command line arguements
-if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]))
+if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && isset($argv[4]) && isset($argv[5]))
 {
     // Getting command line arguments
     $filepath = $argv[0];
@@ -34,11 +35,20 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
     $popSize = $argv[2];
     $algorithm = $argv[3];
     $iterations = $argv[4];
+    $addChaos = intval($argv[5]);
+    $kVal = intval($argv[6]);
+    $mutateRate = intval($argv[7]);
     $foundSol = false;
     $fitness = array();
     $counter = 0;
     $logPath = "C:\\xampp\htdocs\ai-puzzles\Log\\log.txt";
     $chaos = $iterations;
+    $answer = $answer[$queens - 4];
+
+    If($kVal < 1)
+    {
+        $kVal = 2;
+    }
 
     // For chart
     $json = array();
@@ -53,79 +63,6 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
     fwrite($log, "\nStarting system at " . date("F d, Y h:i:s A", time()) . "\n");
     fwrite($log, "Initial values:\nFilepath: $filepath\nNumber of queens: $queens\nPopulation size:$popSize\nAlgorithm choice: $algorithm\nMax Iterations: $iterations\n");
 
-    // Population is now initialized enter the while loop
-    /*while($counter != $iterations)
-    {
-        // Creating initial population
-        for($i = 0; $i < $popSize; $i++)
-        {
-            $population[$i]->setName($i);
-
-            // We set the one array
-            $population[$i]->setOneArray();
-
-            // Calculate initial fitness
-            array_push($fitness, $population[$i]->calculateFitness());
-
-            if($fitness[$i] == $population[$i]->getValue())
-            {
-                echo $population[$i]->getValue() . "<br>";
-                echo "<h1>DONE</h1>";
-                $population[$i]->showBoard();
-                $foundSol = true;
-            }
-        }
-
-        foreach($population as $individual)
-        {
-            fwrite($log, "Indivdual " . $individual->getName() . " sequence is " . implode($individual->getOneArray()) . " fitness value " . $individual->getFitness() . "\n");
-        }
-
-        // Population
-        $genetic = new GeneticAlgorithm($log, 1000);
-        $genetic->setPopulation($population);
-
-        // Selecting
-        if($genetic->calculateProbability($fitness) == false)
-        {
-            $foundSol = true;
-            echo "Error: The population was not initialized. Counter at: $counter<br>";
-            for($i = 0; $i < count($population); $i++)
-            {
-                $population[$i]->showBoard();
-            }
-        }
-
-        else
-        {
-            $fittest = max($fitness);
-
-            // Recording best fit
-            if($fittest > $maxFitness)
-            {
-                $maxFitness = $fittest;
-                $bestResult = $population[array_search($maxFitness, $fitness)];
-                $temp = $bestResult->getFitness();
-
-                fwrite($log, "Best fitness found at " . date("F d, Y h:i:s A", time()) . "\nThe fitness value is $temp\n\n");
-            }
-            // Selecting adam and eve
-            $genetic->selectParents($algorithm);
-
-            // New population
-            $genetic->newPopulation();
-        }
-
-        fwrite($log, "Iteration $counter completed at " . date("F d, Y h:i:s A", time()) . "\n");
-        $counter++;
-        unset($fitness);
-        $fitness = array();
-
-        if($foundSol == true)
-        {
-            break;
-        }
-    }*/
     $solved = array();
     $json[0] = count($solved);
 
@@ -173,7 +110,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
                     $json[$counter] = count($solved);
                 }
 
-                if(count($solved) == 92)
+                if(count($solved) == $answer)
                 {
                     fwrite($log, "All solutions have been found " . date("F d, Y h:i:s A", time()) . "\n");
                     $pass = false;
@@ -206,7 +143,7 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
         else
         {
             // Starting solver
-            $solver = new GeneticAlgorithm($log, 1000);
+            $solver = new GeneticAlgorithm($log, 1000, $kVal, $mutateRate);
 
             // Need to start selecting and reproducing next gen
             $solver->setPopulation($population);
@@ -221,27 +158,36 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
             $solver->newPopulation();
         }
 
-        $numberMutations = $solver->getMutations();
-        array_push($avgMutations, $numberMutations);
+        // Checking to make sure solver is set
+        if(isset($solver))
+        {
+            $numberMutations = $solver->getMutations();
+            array_push($avgMutations, $numberMutations);
+        }
+
         $numberMutations = 0;
 
         unset($fitness);
         $counter++;
 
-        if(mt_rand(0, $chaos) == 0)
+        // Checking to make sure chaos is set
+        if($addChaos == 1)
         {
-            fwrite($log, "Oh no! A natural disaster has occurred and the entire population has been wiped out! Restarting at " . date("F d, Y h:i:s A", time()) . "\n");
-            $restart = true;
-            $chaos = $iterations;
-        }
-
-        else
-        {
-            $chaos -= intval(mt_rand(1, sqrt($iterations)));
-
-            if($chaos < 0)
+            if(mt_rand(0, $chaos) == 0)
             {
-                $chaos = 1;
+                fwrite($log, "Oh no! A natural disaster has occurred and the entire population has been wiped out! Restarting at " . date("F d, Y h:i:s A", time()) . "\n");
+                $restart = true;
+                $chaos = $iterations;
+            }
+
+            else
+            {
+                $chaos -= intval(mt_rand(sqrt($iterations), $iterations / 2));
+
+                if($chaos < 0)
+                {
+                    $chaos = 1;
+                }
             }
         }
 
@@ -270,7 +216,18 @@ if(isset($argv[0]) && isset($argv[1]) && isset($argv[2]) && isset($argv[3]) && i
     fwrite($file, serialize($temp));
     fclose($file);
 
-    echo "<h1>Execution Time: " . (microtime(true) - $time_start) . " ms</h1>";
+    echo "<h1>Execution Time: " . (microtime(true) - $time_start) . " seconds</h1>";
+
+    if(count($solved) == $answer)
+    {
+        echo "<h1>Puzzle was completely solved! Found $answer distinct solutions!</h1>";
+    }
+
+    else
+    {
+        echo "<h1>Puzzle was not completely solved! Found " . count($solved) . " distinct solutions!</h1>";
+    }
+
 }
 
 else

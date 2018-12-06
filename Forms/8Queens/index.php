@@ -68,7 +68,10 @@
         <div class="form-group">
             <label for="iteration">Number of Iterations</label>
             <input type="text" class="form-control" id="iteration" aria-describedby="Number of Iteration" placeholder="Enter Number of Iterations" name="iteration" required>
-
+        </div>
+        <div class="form-group">
+            <label for="k">K - Number of Individuals to Select in K-Tournament</label>
+            <input type="text" class="form-control" id="k" aria-describedby="Number of people to put in the arena" placeholder="Enter the value of k" name="k" value="3" required>
         </div>
         <div class="form-group">
             <label for="algorithm">Select algorithm to solve puzzle</label>
@@ -77,13 +80,35 @@
                 <option value="1">K-Tournament Selection</option>
             </select>
         </div>
+        <div class="form-group">
+            <label for="mutate">Mutation Rate as Percentage</label>
+            <select class="form-control" id="mutate" name="mutate" required>
+                <option value="1">10%</option>
+                <option value="2">20%</option>
+                <option value="3">30%</option>
+                <option value="4">40%</option>
+                <option value="5">50%</option>
+                <option value="6">60%</option>
+                <option value="7">70%</option>
+                <option value="8">80%</option>
+                <option value="9">90%</option>
+                <option value="10">100%</option>
+            </select>
+        </div>
         <hr>
         <h5>Our added features to genetic algorithm</h5>
         <div>
-
+            <div class="form-group">
+                <label for="chaos">Apply Chaos</label>
+                <select class="form-control" id="chaos" name="chaos" required>
+                    <option value="1">On</option>
+                    <option value="0">Off</option>
+                </select>
+            </div>
         </div>
 
         <button type="button" class="btn btn-primary" onclick="execute()">Submit</button>
+        <a href="../About/" class="btn btn-secondary">About this Page</a>
     </form>
 
     <div id="load" class="text-center" style="display: none;">
@@ -286,19 +311,45 @@
         var popSize = document.getElementById("popSize").value;
         var algorithm = document.getElementById("algorithm").value;
         var iteration = document.getElementById("iteration").value;
-        document.getElementById("load").style.display = "block";
+        var chaos = document.getElementById("chaos").value;
+        var k = document.getElementById("k").value;
+        var mutate = document.getElementById("mutate").value;
 
-        //ajax call
-        $.ajax({
-            url: "../../Server_Scripts/ExecutePuzzle.php",
-            method: "post",
-            data: {numQueens: numberQueens, popSize: popSize, algorithm: algorithm, iteration: iteration},
-            success: function(data){
-                document.getElementById("load").style.display = "none";
-                document.getElementById("response").innerHTML = data;
-                updateLog();
-            }
-        });
+        if(parseInt(numberQueens) < 4)
+        {
+            alert("Number of queens needs to be larger than 3!");
+        }
+
+        else if(parseInt(popSize) < 2)
+        {
+            alert("Population needs to be larger than 1!");
+        }
+
+        else if(parseInt(iteration) < 10)
+        {
+            alert("Number of iterations needs to be larger than 9!");
+        }
+
+        else if(parseInt(k) < 3)
+        {
+            alert("The value of k needs to be more than 3.");
+        }
+
+        else
+        {
+            document.getElementById("load").style.display = "block";
+            //ajax call
+            $.ajax({
+                url: "../../Server_Scripts/ExecutePuzzle.php",
+                method: "post",
+                data: {numQueens: numberQueens, popSize: popSize, algorithm: algorithm, iteration: iteration, chaos: chaos, k:k, mutate:mutate},
+                success: function(data){
+                    document.getElementById("load").style.display = "none";
+                    document.getElementById("response").innerHTML = data;
+                    updateLog();
+                }
+            });
+        }
     }
 </script>
 </body>
